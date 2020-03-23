@@ -74,7 +74,7 @@ stateAreaData = stateAreaData.rename(columns={"state": "Province/State", "area (
 
 data = states.merge(stateAreaData, on="Province/State").merge(statePopulationData, on="Province/State")
 
-def populationDensity(state):
+def getPopulationDensity(state):
     return float(state["Population"])/float(state["Area"])
 
 def getTemp(state):
@@ -83,6 +83,7 @@ def getTemp(state):
 def getPrec(state):
     return get_climate(state["Latitude"], state["Longitude"])["prec", "mar"]
 
+data["Population Density"] = data.apply(lambda state: getPopulationDensity(state), axis=1)
 data["Average Temperature"] = data.apply(lambda state: getTemp(state), axis=1)
 data["Average Precipitation"] = data.apply(lambda state: getPrec(state), axis=1)
 
