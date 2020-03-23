@@ -1,4 +1,5 @@
 import pandas as pd
+from latlon_utils import get_climate
 
 us_state_abbrev = {
     'Alabama': 'AL',
@@ -76,6 +77,13 @@ data = states.merge(stateAreaData, on="Province/State").merge(statePopulationDat
 def populationDensity(state):
     return float(state["Population"])/float(state["Area"])
 
-data["Population Density"] = data.apply(lambda state: populationDensity(state), axis=1)
+def getTemp(state):
+    return get_climate(state["Latitude"], state["Longitude"])["tavg", "mar"]
+
+def getPrec(state):
+    return get_climate(state["Latitude"], state["Longitude"])["prec", "mar"]
+
+data["Average Temperature"] = data.apply(lambda state: getTemp(state), axis=1)
+data["Average Precipitation"] = data.apply(lambda state: getPrec(state), axis=1)
 
 data.to_csv(r"./data.csv", index=False)
